@@ -1,4 +1,4 @@
-;;; watchman.el --- Interact with watchman from within emacs
+;;; watchman.el --- Interact with watchman from within emacs.
 
 ;; The MIT License (MIT)
 
@@ -28,12 +28,16 @@
 ;; Homepage: https://github.com/nick96/watchman.el
 ;; Package-Requires: ()
 
-;;; Commentary
+;;; Commentary:
 
 ;; Create, inspect, change and delete watchman watches and triggers easily from
-;; within emacs. This package is intended to make basic usage of watchman easy.
+;; within Emacs. This package is intended to make basic usage of watchman easy.
 
 ;;; Code:
+
+(require 'json)
+(require 's)
+(require 'tabulated-list)
 
 (defgroup watchman nil
   "Create, inspect, change and delete watchman watches and triggers"
@@ -44,6 +48,36 @@
   "Watchman executable"
   :group 'watchman
   :type 'string)
+
+(defun watchman--cmd (cmd)
+  "Execute a watchman subcommand CMD using `watchman-executable'."
+  (shell-command-to-string (s-join " " (list watchman-executable cmd))))
+
+(defun watchman--watch-list ()
+  "Call watchman's watch-list subcommand and parse the JSON response."
+  (append (cdr (assoc 'roots (json-read-from-string (watchman--cmd "watch-list")))) nil))
+
+(define-derived-mode watchman-watch-menu-mode tabulated-list-mode "Watch menu"
+  "Special mode for viewing and interacting with watchman's watches."
+  (buffer-disable-undo)
+  (setq truncate-lines t)
+  (setq tabulated-list-format `[("Root" 18 t)])
+  (setq tabulated-list-entries '(lambda () (-map #'(lambda (x) (list nil (vector x nil))) (watchman--watch-list))))
+  (tabulated-list-init-header)
+  (tabulated-list-print)
+  (hl-line-mode 1)
+  (tabulated-list-init-header))
+
+(defun watchman-watch-list ()
+  "View watchman's watches as a table."
+  (interactive)
+  (let ((buf (get-buffer-create "*Watchman watches*")))
+    (with-current-buffer buf
+      (message "setting file coding system")
+      (setq buffer-file-coding-system 'utf8)
+      (message "entering watchman-watch-menu-mode")
+      (watchman-watch-menu-mode))
+    (switch-to-buffer buf)))
 
 (provide 'watchman)
 ;;; watchman.el ends here
