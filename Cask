@@ -4,6 +4,7 @@
 (package-file "watchman.el")
 
 (development
+ (depends-on "undercover")
  (depends-on "cask-package-toolset")
  (depends-on "f")
  (depends-on "ecukes")
