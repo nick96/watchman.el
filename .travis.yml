@@ -4,6 +4,9 @@ os:
   - linux
   - osx
 
+matrix:
+  fast_finish: true
+
 env:
   - EMACS_CI=emacs-25-1
   - EMACS_CI=emacs-25-2
