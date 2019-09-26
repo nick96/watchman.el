@@ -3,6 +3,8 @@
 
 (package-file "watchman.el")
 
+(depends-on "s")
+
 (development
  (depends-on "undercover")
  (depends-on "cask-package-toolset")
