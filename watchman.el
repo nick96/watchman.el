@@ -37,7 +37,7 @@
 
 (defgroup watchman nil
   "Create, inspect, change and delete watchman watches and triggers"
-  :prefix watchman
+  :prefix "watchman"
   :group 'tools)
 
 (defcustom watchman-executable (executable-find "watchman")
@@ -45,4 +45,5 @@
   :group 'watchman
   :type 'string)
 
+(provide 'watchman)
 ;;; watchman.el ends here
